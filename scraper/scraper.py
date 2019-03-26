@@ -1,6 +1,7 @@
 import requests
 import jsonlines
 import sys
+import os.path
 from bs4 import BeautifulSoup
 
 _GENRES = ['comedy', 'sci-fi', 'horror', 'romance', 'action',
@@ -60,6 +61,10 @@ def do_scraping_by_genre(genre):
 
 
 def jsonl_output(genre, titles):
+
+    if not os.path.isdir('output'):
+        os.mkdir('output')
+
     with jsonlines.open('output/' + genre + '.jsonl', mode='w') as writer:
         writer.write(titles)
 

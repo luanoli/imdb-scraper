@@ -1,3 +1,4 @@
 imdb-scraper.sublime-project
 imdb-scraper.sublime-workspace
 *.jsonl
+*.pyc
