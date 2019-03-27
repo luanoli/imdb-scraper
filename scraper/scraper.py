@@ -1,7 +1,8 @@
-import requests
-import jsonlines
 import sys
 import os.path
+
+import jsonlines
+import requests
 from bs4 import BeautifulSoup
 
 _GENRES = ['comedy', 'sci-fi', 'horror', 'romance', 'action',
@@ -15,19 +16,25 @@ def do_request(url):
     if response.status_code != 200:
         sys.exit('Page not found')
 
-    return BeautifulSoup(response.content, 'html.parser')
+    return response.content
 
 
-def parser(soup):
+def parser(content):
+
+    soup = BeautifulSoup(content, 'html.parser')
+
     itens_header = soup.select('h3.lister-item-header')
 
     titles = []
 
     for item in itens_header:
+        dict = {}
+
         links = item.select('a')
         title_list = [link.get_text() for link in links]
-        title = " ".join(title_list).strip()
-        titles.append(title)
+        dict['title'] = " ".join(title_list).strip()
+
+        titles.append(dict)
 
     return titles
 
@@ -47,9 +54,9 @@ def do_scraping_by_genre(genre):
 
         url = build_url(genre, page)
 
-        soup = do_request(url)
+        content = do_request(url)
 
-        new_titles = parser(soup)
+        new_titles = parser(content)
 
         titles = titles + new_titles
 
@@ -63,7 +70,8 @@ def jsonl_output(genre, titles):
         os.mkdir('output')
 
     with jsonlines.open('output/' + genre + '.jsonl', mode='w') as writer:
-        writer.write(titles)
+        for t in titles:
+            writer.write(t)
 
 
 def build_url(genre, page):
