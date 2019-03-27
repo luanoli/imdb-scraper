@@ -1,7 +1,6 @@
 import sys
 import os.path
 import unittest
-import shutil
 
 import jsonlines
 
@@ -25,16 +24,14 @@ class CheckScraping(unittest.TestCase):
                 {"title": "horror4"}
             ])
 
-        if not os.path.isdir('output_test'):
-            os.mkdir('output_test')
+        with jsonlines.open('output/horror.jsonl') as reader:
+            number_of_lines = 0
 
-            with jsonlines.open('output_test/horror.jsonl') as reader:
-                number_of_lines = 0
+            for obj in reader:
+                number_of_lines += 1
 
-                for obj in reader:
-                    number_of_lines += 1
-
-                self.assertEqual(number_of_lines, 4)
+            os.remove('output/horror.jsonl')
+            self.assertEqual(number_of_lines, 4)
 
     def test_number_of_titles(self):
         genre = 'comedy'
@@ -48,10 +45,6 @@ class CheckScraping(unittest.TestCase):
                     number_of_lines += 1
 
                 self.assertEqual(number_of_lines, 500)
-
-    def tearDown(self):
-        if os.path.isdir('output_test'):
-            shutil.rmtree('output_test')
 
 
 if __name__ == '__main__':
