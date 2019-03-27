@@ -10,8 +10,6 @@ _GENRES = ['comedy', 'sci-fi', 'horror', 'romance', 'action',
 
 
 def do_request(url):
-    print(url)
-
     response = requests.get(url)
 
     if response.status_code != 200:
@@ -19,23 +17,23 @@ def do_request(url):
 
     return BeautifulSoup(response.content, 'html.parser')
 
-    #contents = soup.select('lister-item-content')
-
 
 def parser(soup):
-    links = soup.select('h3.lister-item-header a:nth-of-type(1)')
+    itens_header = soup.select('h3.lister-item-header')
 
-    titles = [link.get_text() for link in links]
+    titles = []
+
+    for item in itens_header:
+        links = item.select('a')
+        title_list = [link.get_text() for link in links]
+        title = " ".join(title_list).strip()
+        titles.append(title)
 
     return titles
 
 
 def do_scraping():
     for genre in _GENRES:
-
-        print('\n')
-        print(genre)
-
         titles = do_scraping_by_genre(genre)
 
         jsonl_output(genre, titles)
@@ -61,7 +59,6 @@ def do_scraping_by_genre(genre):
 
 
 def jsonl_output(genre, titles):
-
     if not os.path.isdir('output'):
         os.mkdir('output')
 
