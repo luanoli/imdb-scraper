@@ -47,6 +47,9 @@ def do_scraping():
 
 
 def do_scraping_by_genre(genre):
+
+    print('Collecting data from ' + genre + ' genre...')
+
     page = 1
     titles = []
 
